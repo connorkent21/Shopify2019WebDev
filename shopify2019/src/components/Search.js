@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Input from '@material-ui/core/Input';
+import { getData } from '../api';
 
 
 
@@ -56,11 +57,22 @@ class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      results: [],
+      data: null,
+      results: null,
 
     };
 
-    // this.fetchResults = this.fetchResults.bind(this);
+    this.fetchResults = this.fetchResults.bind(this);
+  }
+
+  componentDidMount() {
+    console.log('getting the data!');
+    getData();
+  }
+
+  fetchResults() {
+    let key = document.getElementById('searchBar').value.trim();
+    console.log('this is the keyword: ', key);
   }
 
   render() {
@@ -75,6 +87,7 @@ class Search extends Component {
             <Grid container spacing={40}>
               <Grid item xs={11}>
                   <input
+                    id='searchBar'
                     type='text'
                     style={{
                       width: '100%',
@@ -82,11 +95,18 @@ class Search extends Component {
                       borderRadius: '3px',
                     }}
                     className='searchInput'
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                        this.fetchResults();
+                      }
+                    }}
                   />
               </Grid>
 
               <Grid item xs={1}>
-                <div className='searchIcon'>
+                <div className='searchIcon pointer' onClick={() => {
+                    this.fetchResults();
+                  }}>
                   <FontAwesomeIcon icon={faSearch} size='lg' className='magIcon'/>
                 </div>
               </Grid>
