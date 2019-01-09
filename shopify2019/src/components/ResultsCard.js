@@ -76,7 +76,10 @@ class ResultsCard extends Component {
         <Grid container spacing={24}>
           <Grid item xs={12} md={6}>
             <Typography>
-              <FontAwesomeIcon icon={faStar} size='lg' /> {this.props.data.title}
+              <FontAwesomeIcon icon={faStar} size='lg' className={this.props.favorite ? 'favorite pointer ease' : 'nonFavorite pointer ease'} onClick={() => {
+                  console.log('setting Fav');
+                  this.props.setFavorite(this.props.data);
+                }}/> {this.props.data.title}
             </Typography>
           </Grid>
 

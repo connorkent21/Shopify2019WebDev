@@ -62,10 +62,12 @@ class Search extends Component {
     this.state = {
       data: [],
       results: [],
+      favorites: [],
 
     };
 
     this.fetchResults = this.fetchResults.bind(this);
+    this.setFavorite = this.setFavorite.bind(this);
   }
 
   componentDidMount() {
@@ -107,6 +109,17 @@ class Search extends Component {
       })
     });
 
+  }
+
+  setFavorite(entry) {
+    let favIndex = this.state.favorites.indexOf(entry);
+    if (favIndex >= 0) {
+      this.state.favorites.splice(favIndex, 1);
+    } else {
+      this.state.favorites.push(entry);
+    }
+    this.forceUpdate();
+    console.log('this is the new state: ', this.state);
   }
 
   render() {
@@ -156,7 +169,7 @@ class Search extends Component {
             {this.state.results.length ?
               this.state.results.map(result => {
                 return(
-                  <ResultsCard data={result} />
+                  <ResultsCard data={result} page={this} setFavorite={this.setFavorite} favorite={(this.state.favorites.indexOf(result) >= 0)}/>
                 )
               })
               :

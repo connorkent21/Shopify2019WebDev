@@ -110,3 +110,15 @@
   -webkit-box-shadow: 3px 2px 13px -2px rgba(0,0,0,0.48) inset;
   -moz-box-shadow: 3px 2px 13px -2px rgba(0,0,0,0.48) inset; */
 }
+
+.favorite {
+  color: #22965E;
+}
+
+.nonFavorite {
+  color: grey;
+}
+
+.ease {
+  transition: all .15s ease-in-out;
+}
