@@ -4,10 +4,14 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 import Input from '@material-ui/core/Input';
 import { getData } from '../api';
 import ResultsCard from './ResultsCard';
+import Fade from 'react-reveal/Fade';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
 
 const FuzzyMatching = require('fuzzy-matching');
 
@@ -28,16 +32,25 @@ const styles = {
     color: 'white !important',
   },
   title: {
-    textTransform: 'uppercase',
-    letterSpacing: '1.25px',
     fontFamily: "'Open Sans', sans-serif",
+    margin: 'auto',
+    textAlign: 'left',
+    padding: '24px',
+    paddingBottom: '8px',
+    fontWeight: '700',
+    color: '#22965E',
   },
   text: {
     fontSize: '1rem',
     fontFamily: "'Open Sans', sans-serif",
+    padding: '24px',
   },
   container: {
     height: '10%',
+  },
+  headerContainer: {
+
+    backgroundColor: 'white'
   }
 };
 
@@ -63,6 +76,7 @@ class Search extends Component {
       data: [],
       results: [],
       favorites: [],
+      searchClicked: false,
 
     };
 
@@ -80,7 +94,7 @@ class Search extends Component {
   }
 
   async fetchResults() {
-    this.setState({results: []}, () => {
+    this.setState({results: [], searchClicked: true}, () => {
       let key = document.getElementById('searchBar').value.trim().toLowerCase();
       console.log('this is the keyword: ', key);
       this.state.data.forEach(entry => {
@@ -123,6 +137,7 @@ class Search extends Component {
   }
 
   render() {
+    const {classes} = this.props;
     return (
       <MuiThemeProvider theme={theme}>
         <div className='container'>
@@ -132,7 +147,7 @@ class Search extends Component {
 
           <section className='searchContainer'>
             <Grid container spacing={40}>
-              <Grid item xs={11}>
+              <Grid item xs={8} md={11}>
                   <input
                     id='searchBar'
                     type='text'
@@ -152,7 +167,7 @@ class Search extends Component {
                   />
               </Grid>
 
-              <Grid item xs={1}>
+              <Grid item xs={4} md={1}>
                 <div className='searchIcon pointer' onClick={async () => {
                     await this.fetchResults();
                     console.log('this is the new state: ', this.state);
@@ -165,17 +180,66 @@ class Search extends Component {
 
           </section>
 
-          <section>
+          <section >
             {this.state.results.length ?
-              this.state.results.map(result => {
-                return(
-                  <ResultsCard data={result} page={this} setFavorite={this.setFavorite} favorite={(this.state.favorites.indexOf(result) >= 0)}/>
-                )
-              })
+              (<div className='cardContainer'>
+                {this.state.results.map(result => {
+                  return(
+                    <Fade bottom>
+                      <ResultsCard data={result} page={this} setFavorite={this.setFavorite} favorite={(this.state.favorites.indexOf(result) >= 0)}/>
+                    </Fade>
+                  )
+                })}
+              </div>)
+
               :
-              null
+              <div style={{
+                  height: '50vh',
+                  width: '100%',
+                  alignItems: 'center',
+                  alignContent: 'center',
+                  fontSize: '2rem',
+                  textAlign: 'center',
+                  fontfamily: "'Open Sans', sans-serif",
+                }}
+              >
+              <span style={{
+                  textAlign: 'center',
+                  margin: 'auto',
+                  fontWeight: '700',
+                }}>
+                {this.state.searchClicked ? 'No Results Found' : ''}
+              </span>
+            </div>
             }
           </section>
+
+          <div className='favoritesSection'>
+            <Grid container spacing={24}>
+              <Grid item xs={12} className={classes.headerContainer}>
+                <Typography variant='h4' className={classes.title}>
+                  Favorites
+                </Typography>
+              </Grid>
+              {
+                this.state.favorites.length
+                ?
+                this.state.favorites.map(fav => {
+                  return(
+                    <Grid item xs={12}>
+                      <ResultsCard data={fav} page={this} setFavorite={this.setFavorite} favorite={(this.state.favorites.indexOf(fav) >= 0)}/>
+                    </Grid>
+                )
+                })
+                :
+                (<Grid item xs={12}>
+                  <Typography variant='h5' className={classes.text}>
+                    Click the <FontAwesomeIcon icon={faStar} size='1x' className='nonFavorite'/> next to the search results to save them to your favorites list.
+                  </Typography>
+                </Grid>)
+              }
+            </Grid>
+          </div>
         </div>
       </MuiThemeProvider>
     );

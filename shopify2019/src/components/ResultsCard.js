@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+import Paper from '@material-ui/core/Paper';
 
 
 
@@ -21,31 +22,11 @@ function fixString(str) {
 
 
 const styles = {
-  main: {
-    height: '100%',
-    marginBottom: 0,
-    boxShadow: '0 5px 14px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22) inset',
-    padding: '48px 24px',
-
-  },
-  paper: {
-    padding: '32px',
-    display: 'table-cell',
-    verticalAlign: 'middle',
-    background: 'transparent',
-    color: 'white !important',
-  },
-  title: {
-    textTransform: 'uppercase',
-    letterSpacing: '1.25px',
-    fontFamily: "'Open Sans', sans-serif",
-  },
-  text: {
-    fontSize: '1rem',
-    fontFamily: "'Open Sans', sans-serif",
-  },
-  container: {
-    height: '10%',
+  card: {
+    padding: '24px',
+    minHeight: '20vh',
+    borderRadius: '5px',
+    backgroundColor: '#e8e9ea'
   }
 };
 
@@ -68,28 +49,32 @@ class ResultsCard extends Component {
   }
 
   render() {
+    const { classes } = this.props;
     return(
     <MuiThemeProvider theme={theme}>
-      <section style={{
-          padding: '24px',
-        }}>
-        <Grid container spacing={24}>
-          <Grid item xs={12} md={6}>
-            <Typography>
-              <FontAwesomeIcon icon={faStar} size='lg' className={this.props.favorite ? 'favorite pointer ease' : 'nonFavorite pointer ease'} onClick={() => {
-                  console.log('setting Fav');
-                  this.props.setFavorite(this.props.data);
-                }}/> {this.props.data.title}
-            </Typography>
-          </Grid>
+        <section style={{
+            padding: '24px',
+          }}>
+          <div className={`${classes.card} hoverCard`} elevation='2'>
+            <Grid container spacing={24}>
+              <Grid item xs={12} md={6}>
+                <Typography className='resultTitle'>
+                  <FontAwesomeIcon icon={faStar} size='lg' className={this.props.favorite ? 'favorite pointer ease' : 'nonFavorite pointer ease'} onClick={() => {
+                      console.log('setting Fav');
+                      this.props.setFavorite(this.props.data);
+                    }}/> {this.props.data.title}
+                </Typography>
+              </Grid>
 
-          <Grid item xs={12} md={6}>
-            <Typography>
-              { ReactHtmlParser(fixString(this.props.data.body)) }
-            </Typography>
-          </Grid>
-        </Grid>
-      </section>
+              <Grid item xs={12} md={6}>
+                <Typography>
+                  { ReactHtmlParser(fixString(this.props.data.body)) }
+                </Typography>
+              </Grid>
+            </Grid>
+          </div>
+        </section>
+
     </MuiThemeProvider>
   )
   }
