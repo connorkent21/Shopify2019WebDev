@@ -7,8 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Input from '@material-ui/core/Input';
 import { getData } from '../api';
+import ResultsCard from './ResultsCard';
 
-
+const FuzzyMatching = require('fuzzy-matching');
 
 
 const styles = {
@@ -53,12 +54,14 @@ const theme = createMuiTheme({
 });
 
 
+
+
 class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
-      results: null,
+      data: [],
+      results: [],
 
     };
 
@@ -67,12 +70,43 @@ class Search extends Component {
 
   componentDidMount() {
     console.log('getting the data!');
-    getData();
+    getData().then(data => {
+      this.setState({data});
+      console.log('this is the state: ', this.state);
+    })
+
   }
 
-  fetchResults() {
-    let key = document.getElementById('searchBar').value.trim();
-    console.log('this is the keyword: ', key);
+  async fetchResults() {
+    this.setState({results: []}, () => {
+      let key = document.getElementById('searchBar').value.trim().toLowerCase();
+      console.log('this is the keyword: ', key);
+      this.state.data.forEach(entry => {
+        // console.log('this is the entry: ', entry.category.toLowerCase());
+        // console.log('this is the logic check: ', !!this.state.results.indexOf(entry));
+        if (!(this.state.results.indexOf(entry) + 1)) {
+          // console.log('looking for match.')
+          let keywords = entry.keywords.split(',');
+          let fmKeyWords = new FuzzyMatching(keywords);
+          let catSplit = entry.category.split(' ');
+          let titleSplit = entry.title.split(' ');
+          let fmCatKeys = new FuzzyMatching(catSplit);
+          let fmTitleKeys = new FuzzyMatching(titleSplit);
+          if (fmCatKeys.get(key, { maxChanges: 2 }).value || fmTitleKeys.get(key, { maxChanges: 2 }).value) {
+            this.state.results.push(entry);
+            console.log('this is the new matches array: ', this.state.results);
+          } else {
+            let match = fmKeyWords.get(key, { maxChanges: 3 }).value;
+            if (match) {
+              console.log('found a match!: ', match, 'and this is the entry: ', entry);
+              this.state.results.push(entry);
+              console.log('this is the new matches array: ', this.state.results);
+            }
+          }
+        }
+      })
+    });
+
   }
 
   render() {
@@ -95,23 +129,39 @@ class Search extends Component {
                       borderRadius: '3px',
                     }}
                     className='searchInput'
-                    onKeyPress={e => {
+                    onKeyPress={async e => {
                       if (e.key === 'Enter') {
-                        this.fetchResults();
+                        await this.fetchResults();
+                        console.log('this is the new state: ', this.state);
+                        this.forceUpdate();
                       }
                     }}
                   />
               </Grid>
 
               <Grid item xs={1}>
-                <div className='searchIcon pointer' onClick={() => {
-                    this.fetchResults();
+                <div className='searchIcon pointer' onClick={async () => {
+                    await this.fetchResults();
+                    console.log('this is the new state: ', this.state);
+                    this.forceUpdate();
                   }}>
                   <FontAwesomeIcon icon={faSearch} size='lg' className='magIcon'/>
                 </div>
               </Grid>
             </Grid>
 
+          </section>
+
+          <section>
+            {this.state.results.length ?
+              this.state.results.map(result => {
+                return(
+                  <ResultsCard data={result} />
+                )
+              })
+              :
+              null
+            }
           </section>
         </div>
       </MuiThemeProvider>
