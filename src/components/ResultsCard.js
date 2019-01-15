@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
-import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
-import Paper from '@material-ui/core/Paper';
+import ReactHtmlParser from 'react-html-parser';
 
 
 
@@ -18,7 +16,6 @@ const entities = new Entities();
 function fixString(str) {
   return entities.decode(str);
 }
-
 
 
 const styles = {
@@ -43,10 +40,6 @@ const theme = createMuiTheme({
 });
 
 class ResultsCard extends Component {
-  constructor(props) {
-    super(props);
-
-  }
 
   render() {
     const { classes } = this.props;
