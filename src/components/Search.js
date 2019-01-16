@@ -9,25 +9,9 @@ import ResultsCard from './ResultsCard';
 import Fade from 'react-reveal/Fade';
 import Typography from '@material-ui/core/Typography';
 
-
 const FuzzyMatching = require('fuzzy-matching');
 
-
 const styles = {
-  main: {
-    height: '100%',
-    marginBottom: 0,
-    boxShadow: '0 5px 14px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22) inset',
-    padding: '48px 24px',
-
-  },
-  paper: {
-    padding: '32px',
-    display: 'table-cell',
-    verticalAlign: 'middle',
-    background: 'transparent',
-    color: 'white !important',
-  },
   title: {
     fontFamily: "'Open Sans', sans-serif",
     margin: 'auto',
@@ -42,11 +26,7 @@ const styles = {
     fontFamily: "'Open Sans', sans-serif",
     padding: '24px',
   },
-  container: {
-    height: '10%',
-  },
   headerContainer: {
-
     backgroundColor: 'white'
   }
 };
@@ -54,16 +34,8 @@ const styles = {
 const theme = createMuiTheme({
   palette: {
     type: 'light',
-    primary: {
-      main: '#1D5A94',
-    },
-    secondary: {
-      main:'#22965E'
-    }
   },
 });
-
-
 
 
 class Search extends Component {
@@ -82,10 +54,8 @@ class Search extends Component {
   }
 
   componentDidMount() {
-    console.log('getting the data!');
     getData().then(data => {
       this.setState({data});
-      console.log('this is the state: ', this.state);
     })
 
   }
@@ -93,12 +63,8 @@ class Search extends Component {
   async fetchResults() {
     this.setState({results: [], searchClicked: true}, () => {
       let key = document.getElementById('searchBar').value.trim().toLowerCase();
-      console.log('this is the keyword: ', key);
       this.state.data.forEach(entry => {
-        // console.log('this is the entry: ', entry.category.toLowerCase());
-        // console.log('this is the logic check: ', !!this.state.results.indexOf(entry));
         if (!(this.state.results.indexOf(entry) + 1)) {
-          // console.log('looking for match.')
           let keywords = entry.keywords.split(',');
           let fmKeyWords = new FuzzyMatching(keywords);
           let catSplit = entry.category.split(' ');
@@ -107,19 +73,15 @@ class Search extends Component {
           let fmTitleKeys = new FuzzyMatching(titleSplit);
           if (fmCatKeys.get(key, { maxChanges: 2 }).value || fmTitleKeys.get(key, { maxChanges: 2 }).value) {
             this.state.results.push(entry);
-            console.log('this is the new matches array: ', this.state.results);
           } else {
             let match = fmKeyWords.get(key, { maxChanges: 3 }).value;
             if (match) {
-              console.log('found a match!: ', match, 'and this is the entry: ', entry);
               this.state.results.push(entry);
-              console.log('this is the new matches array: ', this.state.results);
             }
           }
         }
       })
     });
-
   }
 
   setFavorite(entry) {
@@ -130,7 +92,6 @@ class Search extends Component {
       this.state.favorites.push(entry);
     }
     this.forceUpdate();
-    console.log('this is the new state: ', this.state);
   }
 
   render() {
@@ -157,7 +118,6 @@ class Search extends Component {
                     onKeyPress={async e => {
                       if (e.key === 'Enter') {
                         await this.fetchResults();
-                        console.log('this is the new state: ', this.state);
                         this.forceUpdate();
                       }
                     }}
@@ -167,7 +127,6 @@ class Search extends Component {
               <Grid item xs={4} md={1}>
                 <div className='searchIcon pointer' onClick={async () => {
                     await this.fetchResults();
-                    console.log('this is the new state: ', this.state);
                     this.forceUpdate();
                   }}>
                   <FontAwesomeIcon icon={faSearch} size='lg' className='magIcon'/>
